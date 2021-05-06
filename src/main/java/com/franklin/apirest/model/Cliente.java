@@ -10,6 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="clientes")
@@ -19,18 +22,29 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotEmpty
+	@Size(min=4,max=50)
 	@Column(nullable = false)
 	private String nombre;
+	
+	@NotEmpty
 	private String apellido;
+	
+	@NotEmpty
+	@Email
 	@Column(nullable = false,unique = true)
 	private String email;
+	
 	@Column(name="created_at")
+	
 	@PrePersist
 	private void prePersist() {
 		//Esto es un evento que se ejecuta antes de guardar el modelo en la base de datos
 		createdAt = LocalDate.now();
 	}
 	private LocalDate createdAt;
+	
 	public Long getId() {
 		return id;
 	}
