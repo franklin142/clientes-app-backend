@@ -9,6 +9,9 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -62,6 +65,25 @@ public class ClienteRestController {
 		}
 		return new ResponseEntity<Cliente>(cliente,HttpStatus.OK);
 	}
+	@GetMapping("/clientes/page/{page}")
+	//Devuelve una pagina determinada segun el numero que se reciba como parametro
+	public Page<Cliente> index(@PathVariable Integer page){
+		Integer size = 3;
+		Pageable pageable = PageRequest.of(page,size);
+		/* Esta funcion retorna una pagina con los datos de 
+		 * content: La lista de datos de la pagina solicitada mediante @PathVariable 
+		 * totalPages: Total de paginas existentes segun el size de registros por pagina 
+		 * totalElements: Es el total de registros en la consulta
+		 * size: Es el total de registros por pagina
+		 * number: es el numero de pagina retornado al usuario
+		 * numberOfElements: Es el total de registros devueltos en la pagina actual
+		 * empty: retorna true o false para indicar que la pagina trae o no trae registros
+		 * first: indica si es la primer pagina de la consulta
+		 * last: indica si es la ultima pagina de la consulta
+		 */
+		return clienteService.findAll(pageable);
+	}
+
 	
 	@PostMapping("/clientes")
 	//@ResponseStatus(code = HttpStatus.CREATED)
@@ -123,6 +145,7 @@ public class ClienteRestController {
 			clienteFound.setApellido(cliente.getApellido());
 			clienteFound.setNombre(cliente.getNombre());
 			clienteFound.setEmail(cliente.getEmail());
+			clienteFound.setCreatedAt(cliente.getCreatedAt());
 			cliente = clienteService.save(clienteFound);		
 		}catch(DataAccessException ex) {
 			response.put("message", "Error en la base de datos al actualizar el registro");

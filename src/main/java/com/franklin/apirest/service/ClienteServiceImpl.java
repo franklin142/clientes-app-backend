@@ -5,6 +5,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.franklin.apirest.model.Cliente;
@@ -27,7 +29,10 @@ public class ClienteServiceImpl implements IClienteService {
 	public List<Cliente> findAll() {
 		return (List<Cliente>)clienteDao.findAll();
 	}
-
+	@Override
+	public Page<Cliente> findAll(Pageable pageable) {
+		return clienteDao.findAll(pageable);
+	}
 	@Override
 	@Transactional()
 	public Cliente findById(Long id) {

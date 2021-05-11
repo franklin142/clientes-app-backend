@@ -8,10 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -36,15 +36,17 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	@Column(nullable = false,unique = true)
 	private String email;
 	
+	@NotNull
 	@Column(name="created_at")
+	private LocalDate createdAt;
 	
+	/*
 	@PrePersist
 	private void prePersist() {
 		//Esto es un evento que se ejecuta antes de guardar el modelo en la base de datos
 		createdAt = LocalDate.now();
 	}
-	private LocalDate createdAt;
-	
+	*/
 	public Long getId() {
 		return id;
 	}
