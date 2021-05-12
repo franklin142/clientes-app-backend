@@ -40,6 +40,8 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	@Column(name="created_at")
 	private LocalDate createdAt;
 	
+	private String foto;
+	
 	/*
 	@PrePersist
 	private void prePersist() {
@@ -76,6 +78,12 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	}
 	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
+	}
+	public String getFoto() {
+		return foto;
+	}
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 	
 }

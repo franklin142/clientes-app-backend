@@ -1,5 +1,9 @@
 package com.franklin.apirest.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +31,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.franklin.apirest.model.Cliente;
 import com.franklin.apirest.service.IClienteService;
@@ -68,18 +74,18 @@ public class ClienteRestController {
 	@GetMapping("/clientes/page/{page}")
 	//Devuelve una pagina determinada segun el numero que se reciba como parametro
 	public Page<Cliente> index(@PathVariable Integer page){
-		Integer size = 3;
+		Integer size = 5;
 		Pageable pageable = PageRequest.of(page,size);
-		/* Esta funcion retorna una pagina con los datos de 
-		 * content: La lista de datos de la pagina solicitada mediante @PathVariable 
-		 * totalPages: Total de paginas existentes segun el size de registros por pagina 
-		 * totalElements: Es el total de registros en la consulta
-		 * size: Es el total de registros por pagina
-		 * number: es el numero de pagina retornado al usuario
-		 * numberOfElements: Es el total de registros devueltos en la pagina actual
-		 * empty: retorna true o false para indicar que la pagina trae o no trae registros
-		 * first: indica si es la primer pagina de la consulta
-		 * last: indica si es la ultima pagina de la consulta
+		/* Esta funcion retorna una pagina con los datos siguientes
+		 * content: La lista de datos de la pagina solicitada mediante @PathVariable.
+		 * totalPages: Total de paginas existentes segun el size de registros por pagina.
+		 * totalElements: Es el total de registros en la consulta.
+		 * size: Es el total de registros por pagina.
+		 * number: es el numero de pagina retornado al usuario.
+		 * numberOfElements: Es el total de registros devueltos en la pagina actual.
+		 * empty: retorna true o false para indicar que la pagina trae o no trae registros.
+		 * first: indica si es la primer pagina de la consulta.
+		 * last: indica si es la ultima pagina de la consulta.
 		 */
 		return clienteService.findAll(pageable);
 	}
@@ -172,6 +178,31 @@ public class ClienteRestController {
 		}
 		
 	}
+	@PostMapping("/clientes/upload")
+	public ResponseEntity<?> upload(@RequestParam MultipartFile archivo, @RequestParam Long id){
+		Map<String, Object> response = new HashMap<>();
+		Cliente cliente = clienteService.findById(id);
+		if(!archivo.isEmpty()) {
+			String nombreArchivo = archivo.getOriginalFilename();
+			Path rutaArchivo = Paths.get("upload").resolve(nombreArchivo).toAbsolutePath();
+			try {
+				Files.copy(archivo.getInputStream(), rutaArchivo);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				response.put("message", "Error al subir la imagen");
+				response.put("error", e.getMessage()+": "+e.getCause().getMessage());
+				return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			cliente.setFoto(nombreArchivo);
+			clienteService.save(cliente);
+			response.put("message", "Foto actualizada correctamente - "+rutaArchivo);
+			response.put("cliente", cliente);
+
+		}
+		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.CREATED);
+	}
+	/*
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleValidationExceptions(
@@ -184,4 +215,5 @@ public class ClienteRestController {
 	    });
 	    return errors;
 	}
+	*/
 }
