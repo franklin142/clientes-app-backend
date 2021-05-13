@@ -25,7 +25,7 @@ public class ClienteServiceImpl implements IClienteService {
 	private IClienteDao clienteDao;
 	
 	@Override
-	@Transactional()
+	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
 	public List<Cliente> findAll() {
 		return (List<Cliente>)clienteDao.findAll();
 	}
@@ -34,21 +34,21 @@ public class ClienteServiceImpl implements IClienteService {
 		return clienteDao.findAll(pageable);
 	}
 	@Override
-	@Transactional()
+	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
 	public Cliente findById(Long id) {
 		// TODO Auto-generated method stub
 		return clienteDao.findById(id).orElse(null);
 	}
 
 	@Override
-	@Transactional()
+	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
 	public Cliente save(Cliente cliente) {
 		// TODO Auto-generated method stub
 		return clienteDao.save(cliente);
 	}
 
 	@Override
-	@Transactional()
+	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
 	public void delete(Long id) {
 		// TODO Auto-generated method stub
 		clienteDao.deleteById(id);
