@@ -19,7 +19,7 @@ import com.franklin.apirest.data.IClienteDao;
  * 
  * Esta es la capa de logica de negocios o clase de servicio
  */
-@Service//Convierte en servicio una clase y la hace inyectable
+@Service//Convierte una clase en servicio y la hace inyectable en controllers
 public class ClienteServiceImpl implements IClienteService {
 	@Autowired
 	private IClienteDao clienteDao;

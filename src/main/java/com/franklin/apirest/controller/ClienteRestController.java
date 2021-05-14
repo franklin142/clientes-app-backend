@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.franklin.apirest.model.Cliente;
 import com.franklin.apirest.service.IClienteService;
+import com.franklin.apirest.service.IUploadFileService;
 
 @RestController //aplicaciones web utilizan Controller pero Apis Rest utilizan RestController
 @RequestMapping("/api")
@@ -52,6 +53,8 @@ public class ClienteRestController {
 	  */
 	@Autowired
 	private IClienteService clienteService;
+	@Autowired
+	private IUploadFileService uploadFileService;
 	private final Logger log = LoggerFactory.getLogger( ClienteRestController.class);
 	@GetMapping("/clientes")
 	public List<Cliente> index(){
@@ -171,28 +174,21 @@ public class ClienteRestController {
 		Map<String, Object> response = new HashMap<>();
 
 		try {
-			response.put("message", "Cliente eliminado correctamente.");
 			Cliente cliente = clienteService.findById(id);
-			//eliminamos la foto para que no quede huerfana
-			if(cliente.getFoto()!=null && cliente.getFoto().length()>0) {
-				Path rutaFotoOld = Paths.get("upload").resolve(cliente.getFoto()).toAbsolutePath();
-				File archivoOld = rutaFotoOld.toFile();
-				//verificamos si el archivo existe y si puede ser leido
-				if(archivoOld.exists() && archivoOld.canRead()) {
-					archivoOld.delete();
-				}
-			}
 			
+			//eliminamos la foto para que no quede huerfana despues de borrar el cliente
+			uploadFileService.deleteFile(cliente.getFoto());
 			
 			clienteService.delete(id);
-			return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
+			
+			response.put("message", "Cliente eliminado correctamente.");
 		}catch(DataAccessException ex) {
 			response.put("message", "Error en la base de datos al borrar el registro");
 			response.put("error", ex.getMessage()+": "+ex.getMostSpecificCause().getMessage());
 			return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
-			
 		}
-		
+
+		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
 	}
 	@PostMapping("/clientes/upload")
 	public ResponseEntity<?> upload(@RequestParam MultipartFile archivo, @RequestParam Long id){
@@ -200,14 +196,10 @@ public class ClienteRestController {
 		Cliente cliente = clienteService.findById(id);
 		log.info(id.toString());
 		if(!archivo.isEmpty()) {
-			String nombreArchivo = UUID.randomUUID()
-					.toString()+"_"+archivo
-					.getOriginalFilename()
-					.replace(" ", "");
+			String nombreArchivo = null;
 			
-			Path rutaArchivo = Paths.get("upload").resolve(nombreArchivo).toAbsolutePath();
 			try {
-				Files.copy(archivo.getInputStream(), rutaArchivo);
+				nombreArchivo = uploadFileService.saveFile(archivo);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -216,18 +208,12 @@ public class ClienteRestController {
 				return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 			//eliminamos la foto anterior
-			if(cliente.getFoto()!=null && cliente.getFoto().length()>0) {
-				Path rutaFotoOld = Paths.get("upload").resolve(cliente.getFoto()).toAbsolutePath();
-				File archivoOld = rutaFotoOld.toFile();
-				//verificamos si el archivo existe y si puede ser leido para borrarlo sin errores
-				if(archivoOld.exists() && archivoOld.canRead()) {
-					archivoOld.delete();
-				}
-			}
-			log.info(nombreArchivo);
-
+		    uploadFileService.deleteFile(cliente.getFoto());
+		    
 			cliente.setFoto(nombreArchivo);
+			
 			clienteService.save(cliente);
+			
 			response.put("message", "Foto actualizada correctamente - "+archivo.getOriginalFilename());
 			response.put("cliente", cliente);
 		}
@@ -237,48 +223,27 @@ public class ClienteRestController {
 	//debe llevar la expresion regular :.+ para que no de error
 	@GetMapping("/uploads/img/{nombreFoto:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
-		Path rutaFoto= Paths.get("upload").resolve(nombreFoto).toAbsolutePath();
-		Resource foto=null;
+		Resource foto = null;
 		try {
-			foto = new UrlResource(rutaFoto.toUri());
+			foto = uploadFileService.getFile(nombreFoto,"");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//validamos si el archivo no existe o no puede ser leido
-		if(!foto.exists() || !foto.isReadable()) {
-			
-			try {
-				String noUserImage ="no-user-image.jpg";
-				rutaFoto = Paths.get("src/main/resources/static/images").resolve(noUserImage).toAbsolutePath();
-				foto = new UrlResource(rutaFoto.toUri());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-			log.error("No se pudo cargar la imagen: "+nombreFoto);
-			
-			
-		}
-		//Sito todo es correcto agregamos la cabecera http para forzar descargar el archivo
+		//Si todo es correcto agregamos la cabecera http para forzar descargar el archivo
 		HttpHeaders cabecera = new HttpHeaders();
 		
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+foto.getFilename()+"\"");
 		return new ResponseEntity<Resource>(foto,cabecera,HttpStatus.OK);
 	}
 	@GetMapping("/static/img/{nombreFoto:.+}")
-	public ResponseEntity<Resource> getImage(@PathVariable String nombreFoto){
-		Path rutaFotoOld = Paths.get("src/main/resources/static/images").resolve(nombreFoto).toAbsolutePath();
+	public ResponseEntity<Resource> getDefualtImage(@PathVariable String nombreFoto){		
 		Resource foto=null;
 		try {
-			foto = new UrlResource(rutaFotoOld.toUri());
+			foto = uploadFileService.getFile(nombreFoto,"src/main/resources/static/images");
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		log.info(rutaFotoOld.toString());
 		//validamos si el archivo no existe o no puede ser leido
 		if(!foto.exists() || !foto.isReadable()) {
 			throw new RuntimeException("No se pudo cargar la imagen: "+nombreFoto);
