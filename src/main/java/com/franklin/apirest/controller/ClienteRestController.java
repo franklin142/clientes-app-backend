@@ -1,15 +1,10 @@
 package com.franklin.apirest.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -18,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.franklin.apirest.model.Cliente;
+import com.franklin.apirest.model.Region;
 import com.franklin.apirest.service.IClienteService;
 import com.franklin.apirest.service.IUploadFileService;
 
@@ -159,6 +154,7 @@ public class ClienteRestController {
 			clienteFound.setNombre(cliente.getNombre());
 			clienteFound.setEmail(cliente.getEmail());
 			clienteFound.setCreatedAt(cliente.getCreatedAt());
+			clienteFound.setRegion(cliente.getRegion());
 			cliente = clienteService.save(clienteFound);		
 		}catch(DataAccessException ex) {
 			response.put("message", "Error en la base de datos al actualizar el registro");
@@ -253,6 +249,12 @@ public class ClienteRestController {
 		
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+foto.getFilename()+"\"");
 		return new ResponseEntity<Resource>(foto,cabecera,HttpStatus.OK);
+	}
+	@GetMapping("/clientes/regiones")
+	public List<Region> listarRegiones(){
+		List<Region> regiones = clienteService.findAllRegiones();
+		//log.info(regiones.toString());
+		return clienteService.findAllRegiones();
 	}
 	/*
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

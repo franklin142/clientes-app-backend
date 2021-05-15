@@ -5,14 +5,21 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 @Entity
 @Table(name="clientes")
@@ -41,12 +48,25 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	private LocalDate createdAt;
 	
 	private String foto;
-	
+	//fetch es la forma en la que se obtienen los datos en la consulta.
+	//con FetchType.LAZY los datos se obtienen al llamar al metodo getRegion.
+	//evitando cargar todo desde el inicio
+	@ManyToOne(fetch=FetchType.LAZY)
+	//Si se omite el name de la columna spring toma el nombre 
+	//de la propiedad mas el id referenciado
+	@JoinColumn(name="region_id"/*, columnDefinition = "bigint defualt 1"*/)
+	//Al generar un objeto de tipo LAZY se genera un proxy junto a unos elementos innecesarios
+	//los cuales deben ser excluidos a la hora de convertir la clase en json.
+	//Estos elementos son metodos que generan error al llamar intentar retornar
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+	@NotNull
+	private Region region;
 	/*
 	@PrePersist
 	private void prePersist() {
 		//Esto es un evento que se ejecuta antes de guardar el modelo en la base de datos
-		createdAt = LocalDate.now();
+		//createdAt = LocalDate.now();
+		region.setId(Long.getLong("1"));
 	}
 	*/
 	public Long getId() {
@@ -84,6 +104,12 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	}
 	public void setFoto(String foto) {
 		this.foto = foto;
+	}
+	public Region getRegion() {
+		return region;
+	}
+	public void setRegion(Region region) {
+		this.region = region;
 	}
 	
 }

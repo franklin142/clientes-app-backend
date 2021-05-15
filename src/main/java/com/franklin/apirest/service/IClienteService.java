@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.franklin.apirest.model.Cliente;
+import com.franklin.apirest.model.Region;
 
 /**
  * Declara todos los metodos de IClienteDao para poder ser implementados en una clase service
@@ -17,5 +18,6 @@ public interface IClienteService {
 	public Cliente findById(Long id);
 	public Cliente save(Cliente cliente);
 	public void delete(Long id);
+	public List<Region> findAllRegiones();
 	
 }
