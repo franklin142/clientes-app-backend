@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,10 +52,7 @@ public class ClienteRestController {
 	@Autowired
 	private IUploadFileService uploadFileService;
 	private final Logger log = LoggerFactory.getLogger( ClienteRestController.class);
-	@GetMapping("/clientes")
-	public List<Cliente> index(){
-		return clienteService.findAll();
-	}
+	@Secured({"ROLE_ADMIN","ROLE_SELER"})
 	@GetMapping("/clientes/{id}")
 	public ResponseEntity<?> show(@PathVariable Long id){
 		Cliente cliente = null;
@@ -72,6 +70,10 @@ public class ClienteRestController {
 			return new ResponseEntity<Map<String, Object>>(response,HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Cliente>(cliente,HttpStatus.OK);
+	}
+	@GetMapping("/clientes")
+	public List<Cliente> index(){
+		return clienteService.findAll();
 	}
 	@GetMapping("/clientes/page/{page}")
 	//Devuelve una pagina determinada segun el numero que se reciba como parametro
@@ -92,7 +94,7 @@ public class ClienteRestController {
 		return clienteService.findAll(pageable);
 	}
 
-	
+	@Secured({"ROLE_ADMIN"})
 	@PostMapping("/clientes")
 	//@ResponseStatus(code = HttpStatus.CREATED)
 	public ResponseEntity<?> create(@RequestBody @Valid Cliente cliente, BindingResult result) {
@@ -126,6 +128,7 @@ public class ClienteRestController {
 		}
 		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.CREATED);
 	}
+	@Secured({"ROLE_ADMIN"})
 	@PutMapping("/clientes/{id}")
 	//@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> update(@Valid @RequestBody Cliente cliente,
@@ -164,6 +167,7 @@ public class ClienteRestController {
 		return new ResponseEntity<Cliente>(cliente,HttpStatus.CREATED);
 		
 	}
+	@Secured({"ROLE_ADMIN"})
 	@DeleteMapping("/clientes/{id}")
 	//@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -186,6 +190,7 @@ public class ClienteRestController {
 
 		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
 	}
+	@Secured({"ROLE_ADMIN","ROLE_SELER"})
 	@PostMapping("/clientes/upload")
 	public ResponseEntity<?> upload(@RequestParam MultipartFile archivo, @RequestParam Long id){
 		Map<String, Object> response = new HashMap<>();
@@ -217,6 +222,7 @@ public class ClienteRestController {
 	}
 	//nombreFoto incluye una extencion de imagen, por lo que 
 	//debe llevar la expresion regular :.+ para que no de error
+	
 	@GetMapping("/uploads/img/{nombreFoto:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
 		Resource foto = null;
@@ -250,6 +256,7 @@ public class ClienteRestController {
 		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+foto.getFilename()+"\"");
 		return new ResponseEntity<Resource>(foto,cabecera,HttpStatus.OK);
 	}
+	@Secured({"ROLE_ADMIN","ROLE_SELER"})
 	@GetMapping("/clientes/regiones")
 	public List<Region> listarRegiones(){
 		List<Region> regiones = clienteService.findAllRegiones();
