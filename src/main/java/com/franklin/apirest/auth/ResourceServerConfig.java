@@ -1,10 +1,18 @@
 package com.franklin.apirest.auth;
 
+import java.util.Arrays;
+
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 //Configuraciones de OAuth2
 @Configuration
@@ -31,7 +39,29 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		.antMatchers(HttpMethod.POST,"api/clientes","api/").hasRole("ADMIN")
 		.antMatchers("api/clientes/**").hasRole("ADMIN")*/
 		// esto va despues de cada configuracion de rutas
-		.anyRequest().authenticated();
+		.anyRequest().authenticated()
+		//configura cors para spring security
+		.and().cors().configurationSource(corsConfigurationSource());
 	}
 	
+	//Es la confuguracion de cors para que spring security retorne el header Access-Control-Allow-Origin
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		//Hacer dinamico con base de datos
+		CorsConfiguration corsConfig = new CorsConfiguration();
+		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		corsConfig.setAllowedMethods(Arrays.asList("GET","PUT","POST","DELETE","OPTIONS"));
+		corsConfig.setAllowCredentials(true);
+		corsConfig.setAllowedHeaders(Arrays.asList("Content-Type","Authorization"));
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfig);
+		
+		return source;
+	}
+	@Bean
+	public FilterRegistrationBean<CorsFilter> coorsFilter(){
+		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(corsConfigurationSource()));
+		return bean;
+	}
 }
