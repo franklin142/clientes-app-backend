@@ -11,3 +11,6 @@ INSERT INTO `usuarios` (username,password,`nombre`,`apellido`,`email`,enabled) V
 -- Los roles deben llevar un prefijo ROLE_ para ser valido y ser escrito en mayusculas
 INSERT INTO `roles`(name) VALUES('ROLE_ADMIN'),('ROLE_SALES');
 INSERT INTO `usuarios_roles`(user_id,role_id) VALUES (1,1),(2,1),(2,2),(3,2);
+INSERT INTO `productos`(nombre,precio,created_at) VALUES ('MOUSE LOGITECH','30.99',NOW()),('CAMARA TCON LOGITECH','300.95',NOW()),('AUDIFONOS MAXEL PRO','20.99',NOW());
+INSERT INTO `ymTAdfD6lq`.`facturas` (`created_at`, `descripcion`, `observacion`, `cliente_id`) VALUES (NOW(), 'venta al por menor/mayor', 'mucha mercaderia', '1'),(NOW(), 'venta al por menor', NULL, '2');
+INSERT INTO `ymTAdfD6lq`.`facturas_items` (`cantidad`, `producto_id`, `factura_id`) VALUES (22,1,1),(33,2,1),(5,3,2);

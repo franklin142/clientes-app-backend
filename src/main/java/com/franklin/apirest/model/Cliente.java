@@ -2,7 +2,10 @@ package com.franklin.apirest.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -48,6 +52,7 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	private LocalDate createdAt;
 	
 	private String foto;
+	
 	//fetch es la forma en la que se obtienen los datos en la consulta.
 	//con FetchType.LAZY los datos se obtienen al llamar al metodo getRegion.
 	//evitando cargar todo desde el inicio
@@ -61,6 +66,14 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 	@NotNull
 	private Region region;
+	
+	@OneToMany(fetch = FetchType.LAZY,
+			// como dejamos que spring maneje el nombre del campo
+			// entonces solo escribimos el nombre que le dimos a la
+			// propiedad.... private Cliente cliente;
+			mappedBy = "cliente",
+			cascade = CascadeType.ALL)
+	private List<Factura> facturas;
 	/*
 	@PrePersist
 	private void prePersist() {
@@ -69,6 +82,9 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 		region.setId(Long.getLong("1"));
 	}
 	*/
+	public Cliente() {
+		this.facturas = new ArrayList<Factura>();
+	}
 	public Long getId() {
 		return id;
 	}
@@ -110,6 +126,12 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	}
 	public void setRegion(Region region) {
 		this.region = region;
+	}
+	public List<Factura> getFacturas() {
+		return facturas;
+	}
+	public void setFacturas(List<Factura> facturas) {
+		this.facturas = facturas;
 	}
 	
 }
