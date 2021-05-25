@@ -52,6 +52,7 @@ public class ClienteRestController {
 	@Autowired
 	private IUploadFileService uploadFileService;
 	private final Logger log = LoggerFactory.getLogger( ClienteRestController.class);
+	
 	@Secured({"ROLE_ADMIN","ROLE_SELER"})
 	@GetMapping("/clientes/{id}")
 	public ResponseEntity<?> show(@PathVariable Long id){

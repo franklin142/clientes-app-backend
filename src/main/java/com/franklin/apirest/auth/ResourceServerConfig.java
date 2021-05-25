@@ -58,6 +58,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				"/api/clientes/page/**",
 				"/api/uploads/img/**",
 				"/api/static/img/**").permitAll()
+		.antMatchers("/api/clientes/{id}").permitAll()
+		.antMatchers("/api/facturas/**").permitAll()
 		//Las siguientes reglas fueron llevadas a anotaciones en el controller
 		//primero se debe asigunar @EnableGlobalMethodSecurity en la clase de SecurityConfig
 		/*

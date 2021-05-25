@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="facturas_items")
 public class ItemFactura  implements Serializable{
@@ -23,8 +25,19 @@ public class ItemFactura  implements Serializable{
 	// es opcional especificar el nombre de la columna... spring genera el nombre 
 	// adecuado segun el estandar recomendado
 	// @JoinColumn(name="producto_id")
+	
+	//eliminamos las propiedades basura del json
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 	private Producto producto;
 	// se coloca get a los metodos que deseamos agregar en el JSON de respuesta
+	// al final spring ejecuta el metodo y genera una propiedad segun el nombre
+	// el cual se refleja en el nombre del metodo
+	// para este ejemplo getImporte() spring separa las palabras "get" e "Importe"
+	// y tomara siempre la segunda palabra que encuentre con inicial mayuscula y luego la convierte
+	// en variable y la agrega al objeto JSON que será retornado al cliente. Todo automaticamente
+	// de manera que solo debemos preocuparnos por nombrar el metodo con la palabra get al inicio
+	// y luego una palabra que inicie con mayuscula seguido de get. Ejemplo public Double getImporte(){return 0;}
+	
 	public Double getImporte() {
 		return cantidad.doubleValue()*producto.getPrecio();
 	}

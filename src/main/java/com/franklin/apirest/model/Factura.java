@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="facturas")
 public class Factura implements Serializable{
@@ -46,6 +48,9 @@ public class Factura implements Serializable{
 	// nombre automaticamente segun el estandar recomendado para nombrar campos
 	// en base de datos manejado por spring.
 	// @JoinColumn(name = "id_cliente")
+	
+	//ignoramos la relacion con el cliente para evitar hacer un ciclo infinito de consultas
+	@JsonIgnoreProperties({"facturas","hibernateLazyInitializer","handler"})
 	private Cliente cliente;
 	@OneToMany(fetch = FetchType.LAZY,
 			// importante definir cascade all para que al 
@@ -54,6 +59,9 @@ public class Factura implements Serializable{
 	// Definimos el join column aqui ya que no nos interesa crear una instancia inversa
 	// hasta esta clase desde itemFactura que genere la columna de forma automática.
 	// Para que la relacion sea creada se necesita agregar esta configuracion aqui
+	
+	//eliminamos las propiedades basura del json
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 	@JoinColumn(name ="factura_id")
 	private List<ItemFactura> items;
 	@PrePersist

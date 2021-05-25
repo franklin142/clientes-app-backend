@@ -73,6 +73,10 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 			// propiedad.... private Cliente cliente;
 			mappedBy = "cliente",
 			cascade = CascadeType.ALL)
+	
+	//ignoramos la propiedad cliente en las facturas para evitar 
+	//hacer un ciclo infinito de consultas
+	@JsonIgnoreProperties({"cliente","hibernateLazyInitializer","handler"})
 	private List<Factura> facturas;
 	/*
 	@PrePersist

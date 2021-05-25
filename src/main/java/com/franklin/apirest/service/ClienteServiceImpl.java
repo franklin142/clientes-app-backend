@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.franklin.apirest.model.Cliente;
+import com.franklin.apirest.model.Factura;
 import com.franklin.apirest.model.Region;
 import com.franklin.apirest.data.IClienteDao;
+import com.franklin.apirest.data.IFacturaDao;
 /**
  * 
  * Implementa todos los metodos definidos en la interfaz y devuelve
@@ -23,6 +25,9 @@ import com.franklin.apirest.data.IClienteDao;
 public class ClienteServiceImpl implements IClienteService {
 	@Autowired
 	private IClienteDao clienteDao;
+	
+	@Autowired
+	private IFacturaDao facturaDao;
 	
 	@Override
 	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
@@ -58,6 +63,30 @@ public class ClienteServiceImpl implements IClienteService {
 	public List<Region> findAllRegiones() {
 		// TODO Auto-generated method stub
 		return clienteDao.findAllRegiones();
+	}
+	@Override
+	@Transactional(readOnly=true)
+	public Factura findFacturaById(Long id) {
+		// TODO Auto-generated method stub
+		return facturaDao.findById(id).orElse(null);
+	}
+	@Override
+	@Transactional()
+	public Factura saveFactura(Factura factura) {
+		// TODO Auto-generated method stub
+		return facturaDao.save(factura);
+	}
+	@Override
+	@Transactional()
+	public void deleteFacturaById(Long id) {
+		// TODO Auto-generated method stub
+		facturaDao.deleteById(id);
+	}
+	@Override
+	@Transactional()
+	public List<Factura> findFacturaAll() {
+		// TODO Auto-generated method stub
+		return  (List<Factura>)facturaDao.findAll();
 	}
 
 }
