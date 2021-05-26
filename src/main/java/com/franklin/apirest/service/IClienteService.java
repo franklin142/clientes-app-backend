@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.franklin.apirest.model.Cliente;
 import com.franklin.apirest.model.Factura;
+import com.franklin.apirest.model.Producto;
 import com.franklin.apirest.model.Region;
 
 /**
@@ -27,4 +28,5 @@ public interface IClienteService {
 	public Factura saveFactura(Factura factura);
 	public void deleteFacturaById(Long id);
 	public List<Factura> findFacturaAll();
+	public List<Producto> findProductoByNombre(String nombre);
 }

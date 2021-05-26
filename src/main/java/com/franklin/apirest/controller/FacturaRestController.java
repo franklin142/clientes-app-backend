@@ -18,13 +18,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.franklin.apirest.model.Cliente;
 import com.franklin.apirest.model.Factura;
+import com.franklin.apirest.model.Producto;
 import com.franklin.apirest.service.IClienteService;
 @CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
@@ -89,7 +88,7 @@ public class FacturaRestController {
 	}
 	
 	@Secured({"ROLE_ADMIN"})
-	@DeleteMapping("/facuras/{id}")
+	@DeleteMapping("/facturas/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -104,4 +103,8 @@ public class FacturaRestController {
 
 		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
 	}
-}
+	@Secured({"ROLE_SALES"})
+	@GetMapping("/facturas/filtrar-productos/{nombre}")
+	public List<Producto> getProductos(@PathVariable String nombre){
+		return clienteService.findProductoByNombre(nombre);
+	}}

@@ -58,9 +58,9 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 		//Refrescar el acceso luego de iniciar sesion
 		.authorizedGrantTypes("password","refresh_token")
 		//Define el tiempo que dura el token de acceso
-		.accessTokenValiditySeconds(3600)
+		.accessTokenValiditySeconds(86400) // 1 dia tiene 86400 segundos en total
 		//DEfine el tiempo de acceso al refresh_token generado
-		.refreshTokenValiditySeconds(3600);
+		.refreshTokenValiditySeconds(86400); // 1 dia tiene 86400 segundos en total
 	}
 	
 	// se encarga del proceso de autenticacion y validar el token

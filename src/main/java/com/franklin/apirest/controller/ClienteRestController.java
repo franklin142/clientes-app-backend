@@ -264,6 +264,7 @@ public class ClienteRestController {
 		//log.info(regiones.toString());
 		return clienteService.findAllRegiones();
 	}
+
 	/*
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.franklin.apirest.model.Cliente;
 import com.franklin.apirest.model.Factura;
+import com.franklin.apirest.model.Producto;
 import com.franklin.apirest.model.Region;
 import com.franklin.apirest.data.IClienteDao;
 import com.franklin.apirest.data.IFacturaDao;
+import com.franklin.apirest.data.IProductoDao;
 /**
  * 
  * Implementa todos los metodos definidos en la interfaz y devuelve
@@ -29,6 +31,8 @@ public class ClienteServiceImpl implements IClienteService {
 	@Autowired
 	private IFacturaDao facturaDao;
 	
+	@Autowired
+	private IProductoDao productoDao;
 	@Override
 	@Transactional()//Para manejar las transacciones y hacer rollback si un error de constraints ocurre
 	public List<Cliente> findAll() {
@@ -87,6 +91,11 @@ public class ClienteServiceImpl implements IClienteService {
 	public List<Factura> findFacturaAll() {
 		// TODO Auto-generated method stub
 		return  (List<Factura>)facturaDao.findAll();
+	}
+	@Override
+	public List<Producto> findProductoByNombre(String nombre) {
+		// TODO Auto-generated method stub
+		return (List<Producto>)productoDao.findByNombreContainingIgnoreCase(nombre);
 	}
 
 }
