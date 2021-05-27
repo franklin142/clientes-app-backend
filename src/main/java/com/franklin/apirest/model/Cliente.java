@@ -63,7 +63,10 @@ public class Cliente implements Serializable {// Serializable sirve para poder g
 	//Al generar un objeto de tipo LAZY se genera un proxy junto a unos elementos innecesarios
 	//los cuales deben ser excluidos a la hora de convertir la clase en json.
 	//Estos elementos son metodos que generan error al llamar intentar retornar
-	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+	@JsonIgnoreProperties(value = {"hibernateLazyInitializer",
+								   "handler"},
+	// para evitar error de recursividad al actualizar registros desde el front-end
+						  allowSetters = true)
 	@NotNull
 	private Region region;
 	

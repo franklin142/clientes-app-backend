@@ -50,7 +50,11 @@ public class Factura implements Serializable{
 	// @JoinColumn(name = "id_cliente")
 	
 	//ignoramos la relacion con el cliente para evitar hacer un ciclo infinito de consultas
-	@JsonIgnoreProperties({"facturas","hibernateLazyInitializer","handler"})
+	@JsonIgnoreProperties(value = {"facturas",
+								   "hibernateLazyInitializer",
+								   "handler"},
+	// para evitar error de recursividad al actualizar registros desde el front-end
+						  allowSetters = true)
 	private Cliente cliente;
 	@OneToMany(fetch = FetchType.LAZY,
 			// importante definir cascade all para que al 
