@@ -41,7 +41,7 @@ import com.franklin.apirest.service.IUploadFileService;
 
 @RestController //aplicaciones web utilizan Controller pero Apis Rest utilizan RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:4200"})//Limita los origenes que estan haciendo peticiones a la API rest
+@CrossOrigin(origins = {"http://localhost:4200","http://localhost:81"})//Limita los origenes que estan haciendo peticiones a la API rest
 public class ClienteRestController {
 	 /**se debe importar la interfaz del servicio generica y no ClienteServiceImpl
 	  * ya que este es solo un componente de la interfaz principal, una extencion.
