@@ -26,7 +26,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	public CorsConfigurationSource corsConfigurationSource() {
 		//Hacer dinamico con base de datos
 		CorsConfiguration corsConfig = new CorsConfiguration();
-		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:81"));
+		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:8181"));
 		corsConfig.setAllowedMethods(Arrays.asList("GET","PUT","POST","DELETE","OPTIONS"));
 		corsConfig.setAllowCredentials(true);
 		corsConfig.setAllowedHeaders(Arrays.asList("Content-Type","Authorization"));
