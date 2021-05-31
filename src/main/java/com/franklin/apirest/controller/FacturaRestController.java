@@ -25,7 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.franklin.apirest.model.Factura;
 import com.franklin.apirest.model.Producto;
 import com.franklin.apirest.service.IClienteService;
-@CrossOrigin(origins = {"http://localhost:4200","http://localhost:8181"})
+@CrossOrigin(origins = {
+		"http://localhost:4200", //local desarrollo
+		"http://localhost:8181", //local pruebas
+		"https://clientes-app-udemy.web.app" //remoto produccion
+		})
 @RestController
 @RequestMapping("/api")
 public class FacturaRestController {
